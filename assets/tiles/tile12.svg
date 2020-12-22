@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" width="300" height="300">
+  <path id="tile12" d="M 300 200 a 280 280 0 0 1 -210 90 L 0 290 L 0 10 L 75 10 a 35 35 0 0 0 25 -10 L 300 0 z" fill="#008800" stroke="none" />
+</svg>
