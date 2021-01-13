@@ -194,6 +194,12 @@ class Main extends Sprite {
 
 			case Keyboard.NUMBER_4:
 				camera.setTarget(car[3]);
+
+			case Keyboard.EQUAL:
+				camera.zoomIn();
+
+			case Keyboard.MINUS:
+				camera.zoomOut();
 		}
 	}
 

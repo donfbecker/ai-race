@@ -93,12 +93,9 @@ class Track extends Sprite {
 
 		var tx:Int = Std.int(p.x / this.tileWidth);
 		var ty:Int = Std.int(p.y / this.tileHeight);
-		trace(tx, ty);
 		if (this.tiles[ty] == null || this.tiles[ty][tx] == null) {
 			return false;
 		}
-
-		trace("Tile is not null.");
 
 		x = p.x % this.tileWidth;
 		y = p.y % this.tileHeight;

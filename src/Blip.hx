@@ -1,13 +1,14 @@
 import flash.display.Shape;
+import flash.display.DisplayObject;
 import flash.events.Event;
 import flash.geom.Point;
 
 class Blip extends Shape {
-	private var target:Dynamic;
-	private var arena:Dynamic;
+	private var target:DisplayObject;
+	private var arena:DisplayObject;
 	private var scale:Float;
 
-	public function new(target:Dynamic, arena:Dynamic, scale:Float = 1, color:Int = 0xff0000) {
+	public function new(target:DisplayObject, arena:DisplayObject, scale:Float = 1, color:Int = 0xff0000) {
 		super();
 		this.target = target;
 		this.arena = arena;
@@ -23,9 +24,7 @@ class Blip extends Shape {
 	}
 
 	private function handleEnterFrame(e:Event):Void {
-		var tp:Point = target.localToGlobal(new Point(0, 0));
-		var ap:Point = arena.localToGlobal(new Point(0, 0));
-		x = (tp.x - ap.x) * scale;
-		y = (tp.y - ap.y) * scale;
+		x = target.x * scale;
+		y = target.y * scale;
 	}
 }
