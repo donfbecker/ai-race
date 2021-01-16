@@ -59,6 +59,7 @@ class NeatDriver extends Organism {
     public override function reset():Void {
         car.x = startingPosition.x;
         car.y = startingPosition.y;
+        car.rotation = 0;
         car.hitWall = false;
         car.distanceTraveled = 0;
         alive = true;
