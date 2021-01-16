@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<meta title="" package="com.gamegutter.race" version="1.0.0" company="Game Gutter" />
-	<app main="Main" path="bin" file="" />
+	<app main="Main" path="bin" file="race" />
 
 	<window background="#000000" fps="30" />
 	<window width="800" height="600" unless="mobile" />

@@ -29,9 +29,9 @@ class Species {
         organisms.push(o);
     }
 
-    public function isSameSpecies(g:Genome):Bool {
-        var excessAndDisjoint:Float = getExcessDisjoint(g, genome);
-        var averageWeightDiff:Float = averageWeightDiff(g, genome);
+    public function isSameSpecies(o:Organism):Bool {
+        var excessAndDisjoint:Float = getExcessDisjoint(o.genome, genome);
+        var averageWeightDiff:Float = averageWeightDiff(o.genome, genome);
         var largeGenomeNormalize:Float = 1; // g.connections.length()??
 
         var compatibility:Float = (excessCoeff * excessAndDisjoint / largeGenomeNormalize) + (weightDiffCoeff * averageWeightDiff);
@@ -43,7 +43,7 @@ class Species {
 
         for(i in 0...g1.connections.length) {
             for(j in 0...g2.connections.length) {
-                if(g1.connections[i].innovation == g2.connections[j].innovation) {
+                if(g1.connections[i].innovationId == g2.connections[j].innovationId) {
                     matching++;
                     break;
                 }
@@ -59,7 +59,7 @@ class Species {
 
         for(i in 0...g1.connections.length) {
             for(j in 0...g2.connections.length) {
-                if(g1.connections[i].innovation == g2.connections[j].innovation) {
+                if(g1.connections[i].innovationId == g2.connections[j].innovationId) {
                     matching++;
                     totalDiff += Math.abs(g1.connections[i].weight - g2.connections[j].weight);
                     break;
@@ -69,5 +69,25 @@ class Species {
 
         if(matching == 0) return 100;
         return totalDiff / matching;
+    }
+
+    public function sort():Void {
+        if(organisms.length < 1) return;
+
+        organisms.sort(function (a, b) {
+            if(a.fitness > b.fitness) return -1;
+            if(a.fitness < b.fitness) return 1;
+            else return 0;
+        });
+
+
+        if(organisms[0].fitness > topFitness) {
+            staleness = 0;
+            topFitness = organisms[0].fitness;
+            genome = organisms[0].genome.clone();
+            champion = organisms[0].clone();
+        } else {
+            staleness++;
+        }
     }
 }

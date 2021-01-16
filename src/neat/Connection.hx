@@ -4,15 +4,15 @@ class Connection {
     public var input:Node;
     public var output:Node;
     public var weight:Float;
-    public var innovation:Int;
+    public var innovationId:Int;
 
     public var active:Bool = true;
 
-    public function new(input:Node, output:Node, weight:Float, innovation:Int) {
+    public function new(input:Node, output:Node, weight:Float, innovationId:Int) {
         this.input = input;
         this.output = output;
         this.weight = weight;
-        this.innovation = innovation;
+        this.innovationId = innovationId;
     }
 
     public function mutate() {
@@ -37,6 +37,8 @@ class Connection {
     }
 
     public function clone():Connection {
-        return new Connection(input, output, weight, innovation);
+        var c:Connection = new Connection(input, output, weight, innovationId);
+        c.active = active;
+        return c;
     }
 }

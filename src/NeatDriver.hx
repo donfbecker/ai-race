@@ -7,17 +7,22 @@ class NeatDriver extends Organism {
 
     private var fx:Int = 225;
 	private var fy:Int = 160;
-	private var lead:Int = 0;
+    private var lead:Float = 0;
 
-    public function new(car:Car, lead:Int = 7) {
+    private var startingPosition:Point;
+
+    public function new(car:Car, lead:Float = 7) {
         // Organism's genome should have 3 inputs and 5 outputs
         super(3, 5);
 
         this.car = car;
         this.lead = lead;
+        this.startingPosition = new Point(car.x, car.y);
     }
 
-    public function tick():Void {
+    public override function tick():Void {
+        if(!alive) return;
+
         var inputs:Array<Float> = new Array<Float>();
         var p:Point = new Point(100, 0);
 
@@ -47,5 +52,20 @@ class NeatDriver extends Organism {
         var space:Bool = (outputs[4] >= 0.9);
 
         car.tick(up, down, left, right, space);
+
+        if(car.hitWall) alive = false;
+    }
+
+    public override function reset():Void {
+        car.x = startingPosition.x;
+        car.y = startingPosition.y;
+        car.hitWall = false;
+        car.distanceTraveled = 0;
+        alive = true;
+    }
+
+    public override function calculateFitness():Float {
+        fitness = car.distanceTraveled;
+        return fitness;
     }
 }

@@ -6,9 +6,9 @@ class Driver {
 
 	private var fx:Int = 225;
 	private var fy:Int = 160;
-	private var lead:Int = 0;
+	private var lead:Float = 0;
 
-	public function new(car:Car, lead:Int = 7) {
+	public function new(car:Car, lead:Float = 7) {
 		this.car = car;
 		this.lead = lead;
 	}

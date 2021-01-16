@@ -14,13 +14,17 @@ import flash.ui.Keyboard;
 import flash.events.TimerEvent;
 import flash.utils.Timer;
 
+import neat.Population;
+
 class Main extends Sprite {
+	private var numberOfCars:Int = 50;
+
 	// Tile info
 	private var tileWidth(default, never):Int = 300;
 	private var tileHeight(default, never):Int = 300;
 
 	// Setup an object for keyboard states
-	private var key:Dynamic = {};
+	private var key:Map<Int, Bool> = [];
 
 	// Sprite objects
 	private var track:Track;
@@ -28,7 +32,13 @@ class Main extends Sprite {
 	private var output:TextField;
 	private var camera:Camera;
 	private var car:Array<Car> = new Array<Car>();
+	
+	#if neat
+	private var driver:Array<NeatDriver> = new Array<NeatDriver>();
+	private var population:Population = new Population();
+	#else
 	private var driver:Array<Driver> = new Array<Driver>();
+	#end
 
 	public function new() {
 		super();
@@ -140,12 +150,17 @@ class Main extends Sprite {
 		addChild(output);
 
 		// Add cars to the track
-		for (i in 0...4) {
+		for (i in 0...numberOfCars) {
 			car[i] = new Car(track, car);
 			car[i].x = ((track.startx) * tileWidth) + (tileWidth / 2);
-			car[i].y = ((track.starty) * tileHeight) + (tileHeight / 2) - 75 + (i * 50);
+			car[i].y = ((track.starty) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
 			if (i > 0) {
-				driver[i] = new Driver(car[i], 2 + i);
+				#if neat
+					driver[i] = new NeatDriver(car[i], Math.random() * 10);
+					population.addOrganism(driver[i]);
+				#else
+					driver[i] = new Driver(car[i], Math.random() * 10);
+				#end
 			}
 			track.addChild(car[i]);
 			track.radar.addChild(new Blip(car[i], track, 1 / 30, (i > 0) ? 0xff0000 : 0x00ff00));
@@ -158,6 +173,7 @@ class Main extends Sprite {
 		//addEventListener(Event.ENTER_FRAME, handleEnterFrame);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, handleKeyUp);
+		stage.addEventListener(Event.RESIZE, onResize);
 
 		var timer:Timer = new Timer(1000 / 30);
 		timer.addEventListener(TimerEvent.TIMER, handleEnterFrame);
@@ -166,14 +182,18 @@ class Main extends Sprite {
 
 	// Setup keyboard listener
 	private function handleEnterFrame(e:Event):Void {
-		// Let the car handle its movement
-		for (i in 0...4) {
-			if (driver[i] != null) {
-				driver[i].tick();
-			} else {
-				car[0].tick(key[Keyboard.UP], key[Keyboard.DOWN], key[Keyboard.LEFT], key[Keyboard.RIGHT], key[Keyboard.SPACE]);
+		#if neat
+			population.tick();
+		#else
+			// Let the car handle its movement
+			for (i in 0...numberOfCars) {
+				if (driver[i] != null) {
+					driver[i].tick();
+				} else {
+					car[0].tick(key[Keyboard.UP], key[Keyboard.DOWN], key[Keyboard.LEFT], key[Keyboard.RIGHT], key[Keyboard.SPACE]);
+				}
 			}
-		}
+		#end
 		camera.tick();
 		speedometer.text = cast(camera.target, Car).speed + "mph";
 	}
@@ -208,5 +228,9 @@ class Main extends Sprite {
 			case Keyboard.UP, Keyboard.DOWN, Keyboard.LEFT, Keyboard.RIGHT, Keyboard.SPACE:
 				key[e.keyCode] = false;
 		}
+	}
+
+	private function onResize(e:Event):Void {
+		track.radar.x = Std.int(stage.stageWidth - track.radar.width);
 	}
 }

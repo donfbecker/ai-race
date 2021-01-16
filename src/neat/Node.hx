@@ -51,6 +51,8 @@ class Node {
     }
 
     public function clone():Node {
-        return new Node(id);
+        var n:Node = new Node(id);
+        n.layer = layer;
+        return n;
     }
 }

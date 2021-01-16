@@ -36,6 +36,10 @@ class Car extends Sprite {
 	private var wheelRot:Float = 1 * (Math.PI / 180);
 	private var collisionPoint:Array<Int> = [0, -12, 12];
 
+	// Variables for AI
+	public var distanceTraveled:Float = 0;
+	public var hitWall:Bool = false;
+
 	public function new(track:Sprite, opponent:Array<Car> = null, spriteBitmap:Bitmap = null) {
 		super();
 
@@ -119,6 +123,7 @@ class Car extends Sprite {
 		velocity.y *= 0.995;
 
 		speedP = velocity.getMag();
+		distanceTraveled += speedP;
 		speed = Math.floor(((speedP / 0.033) * 3600) * MPP);
 
 		// Don't idle forward
@@ -133,6 +138,7 @@ class Car extends Sprite {
 			p.y = collisionPoint[c];
 			p = this.localToGlobal(p);
 			if (!track.hitTestPoint(p.x, p.y, true)) {
+				hitWall = true;
 				x -= velocity.x;
 				y -= velocity.y;
 				if (c == 0) {
