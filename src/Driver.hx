@@ -1,7 +1,6 @@
 import flash.geom.Point;
 
 class Driver {
-	private var track:Dynamic;
 	private var car:Car;
 
 	private var fx:Int = 225;

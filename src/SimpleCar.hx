@@ -2,16 +2,17 @@ import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.geom.Point;
 
+import openfl.Assets;
+
 class SimpleCar extends Sprite {
 	// Sprite
-	@:meta(Embed(source = "assets/car.png"))
-	private var CarSprite(default, never):Class<Dynamic>;
+	private var carSprite:Bitmap = new Bitmap(Assets.getBitmapData('assets/car.png'));
 
 	// track and movement variables
-	public var track:Dynamic;
+	public var track:Sprite;
 
 	private var ontrack:Bool;
-	private var target:Dynamic;
+	private var target:Sprite;
 	private var xmod:Int;
 	private var ymod:Int;
 
@@ -31,7 +32,7 @@ class SimpleCar extends Sprite {
 	public var speed:Float = 0;
 	public var speedP:Float = 0;
 
-	public function new(track:Dynamic, ontrack:Bool = true, target:Dynamic = null, xmod:Int = 1, ymod:Int = 1) {
+	public function new(track:Sprite, ontrack:Bool = true, target:Sprite = null, xmod:Int = 1, ymod:Int = 1) {
 		super();
 		FPP = IPP / 12;
 		MPP = FPP / 5280;
@@ -44,10 +45,9 @@ class SimpleCar extends Sprite {
 		this.ymod = ymod;
 
 		// Draw the sprite
-		var c:Bitmap = Type.createInstance(CarSprite, []);
-		c.x = -10;
-		c.y = -15;
-		addChild(c);
+		carSprite.x = -10;
+		carSprite.y = -15;
+		addChild(carSprite);
 	}
 
 	public function tick(up:Bool = false, down:Bool = false, left:Bool = false, right:Bool = false, space:Bool = false):Void {

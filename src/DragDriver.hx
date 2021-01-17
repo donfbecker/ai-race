@@ -1,7 +1,6 @@
 import openfl.geom.Point;
 
 class DragDriver {
-	private var track:Dynamic;
 	private var car:Car;
 
 	private var lastTick:Int = 0;

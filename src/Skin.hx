@@ -6,7 +6,7 @@ import openfl.Assets;
 
 class Skin {
 	// Tile array
-	public var tile:Array<Dynamic> = new Array<Dynamic>();
+	public var tile:Array<BitmapData> = new Array<BitmapData>();
 
 	public function new(tileWidth:Int, tileHeight:Int) {
 		// Load the embedded skin
