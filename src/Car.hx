@@ -123,7 +123,7 @@ class Car extends Sprite {
 		velocity.y *= 0.995;
 
 		speedP = velocity.getMag();
-		distanceTraveled += speedP;
+		distanceTraveled += speedP * (d >= 0 ? 1 : -1);
 		speed = Math.floor(((speedP / 0.033) * 3600) * MPP);
 
 		// Don't idle forward

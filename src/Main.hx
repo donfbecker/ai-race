@@ -9,6 +9,7 @@ import flash.geom.Rectangle;
 import flash.geom.Point;
 import flash.system.System;
 import flash.text.TextField;
+import flash.text.TextFieldAutoSize;
 import flash.ui.Keyboard;
 
 import flash.events.TimerEvent;
@@ -17,7 +18,7 @@ import flash.utils.Timer;
 import neat.Population;
 
 class Main extends Sprite {
-	private var numberOfCars:Int = 50;
+	private var numberOfCars:Int = 200;
 
 	// Tile info
 	private var tileWidth(default, never):Int = 300;
@@ -144,7 +145,7 @@ class Main extends Sprite {
 
 		// Debug output
 		output = new TextField();
-		output.y = 20;
+		output.autoSize = TextFieldAutoSize.LEFT;
 		output.textColor = 0xFFFFFF;
 		output.autoSize = "left";
 		addChild(output);
@@ -153,7 +154,11 @@ class Main extends Sprite {
 		for (i in 0...numberOfCars) {
 			car[i] = new Car(track, car);
 			car[i].x = ((track.startx) * tileWidth) + (tileWidth / 2);
-			car[i].y = ((track.starty) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
+			#if neat
+				car[i].y = ((track.starty) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
+			#else
+				car[i].y = ((track.starty) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
+			#end
 			if (i > 0) {
 				#if neat
 					driver[i] = new NeatDriver(car[i], Math.random() * 10);
@@ -168,6 +173,9 @@ class Main extends Sprite {
 
 		// Set camera to watch main car
 		camera = new Camera(stage, track, car[0]);
+		#if neat
+			camera.zoomToFit();
+		#end
 
 		// Setup event handling
 		//addEventListener(Event.ENTER_FRAME, handleEnterFrame);
@@ -184,6 +192,9 @@ class Main extends Sprite {
 	private function handleEnterFrame(e:Event):Void {
 		#if neat
 			population.tick();
+
+			output.text = "Generation: " + population.generation;
+			output.y = stage.stageHeight - output.height;
 		#else
 			// Let the car handle its movement
 			for (i in 0...numberOfCars) {
@@ -195,7 +206,7 @@ class Main extends Sprite {
 			}
 		#end
 		camera.tick();
-		speedometer.text = cast(camera.target, Car).speed + "mph";
+		speedometer.text = cast(camera.target, Car).speed + "mph";	
 	}
 
 	private function handleKeyDown(e:KeyboardEvent):Void {

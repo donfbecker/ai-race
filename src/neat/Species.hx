@@ -2,27 +2,25 @@ package neat;
 
 class Species {
     public var genome:Genome;
-    public var organisms:Array<Organism>;
+    public var organisms:Array<Organism> = new Array<Organism>();
 
     private var champion:Organism;
     private var topFitness:Float = 0;
-    private var averageFitness:Float = 0;
-    private var staleness:Int = 0;
+    public var averageFitness:Float = 0;
+    public var staleness:Int = 0;
 
     private var excessCoeff:Float = 1.5;
     private var weightDiffCoeff:Float = 0.8;
     private var compatibilityThreshold:Float = 1;
 
     public function new(organism:Organism = null) {
-        organisms = new Array<Organism>();
-
         if(organism != null) {
             organisms.push(organism);
             topFitness = organism.fitness;
             genome = organism.genome.clone();
             champion = organism.clone();
 
-        }        
+        }
     }
 
     public function addOrganism(o:Organism) {
@@ -30,9 +28,11 @@ class Species {
     }
 
     public function isSameSpecies(o:Organism):Bool {
-        var excessAndDisjoint:Float = getExcessDisjoint(o.genome, genome);
-        var averageWeightDiff:Float = averageWeightDiff(o.genome, genome);
-        var largeGenomeNormalize:Float = 1; // g.connections.length()??
+        var excessAndDisjoint:Float = getExcessDisjoint(o.genome, this.genome);
+        var averageWeightDiff:Float = averageWeightDiff(o.genome, this.genome);
+
+        var largeGenomeNormalize:Float = o.genome.connections.length - 20;
+        if(largeGenomeNormalize < 1) largeGenomeNormalize = 1;
 
         var compatibility:Float = (excessCoeff * excessAndDisjoint / largeGenomeNormalize) + (weightDiffCoeff * averageWeightDiff);
         return (compatibilityThreshold > compatibility);
@@ -80,7 +80,6 @@ class Species {
             else return 0;
         });
 
-
         if(organisms[0].fitness > topFitness) {
             staleness = 0;
             topFitness = organisms[0].fitness;
@@ -89,5 +88,56 @@ class Species {
         } else {
             staleness++;
         }
+    }
+
+    public function calculateAverageFitness():Float {
+        if(organisms.length < 1) return 0;
+
+        var sum:Float = 0;
+        for(o in organisms) sum += o.fitness;
+        averageFitness = sum / organisms.length;
+        return averageFitness;
+    }
+
+    public function cull():Void {
+        if(organisms.length > 2) {
+            organisms.resize(Std.int(organisms.length / 2));
+        }
+    }
+
+    public function fitnessSharing():Void {
+        for(o in organisms) o.fitness /= organisms.length;
+    }
+
+    public function breed():Genome {
+        var offspring:Genome;
+
+        var mother:Organism = selectParent();
+        var father:Organism = selectParent();
+
+        if(mother.fitness > father.fitness) {
+            offspring = mother.genome.breed(father.genome);
+        } else {
+            offspring = father.genome.breed(mother.genome);
+        }
+
+        offspring.mutate();
+        return offspring;
+    }
+
+    private function selectParent():Organism {
+        var fitnessSum:Float = 0;
+        for(o in organisms) fitnessSum += o.fitness;
+
+        var random:Float = fitnessSum * Math.random();
+        var runningSum:Float = 0;
+        for(o in organisms) {
+            runningSum += o.fitness;
+            if(runningSum > random) {
+                return o;
+           }
+        }
+
+        return organisms[0];
     }
 }

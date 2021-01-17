@@ -3,7 +3,7 @@ package neat;
 class Genome {
     public var connections:Array<Connection>;
     public var nodes:Array<Node>;
-    
+
     private var inputs:Int;
     private var outputs:Int;
 
@@ -13,7 +13,7 @@ class Genome {
     public function new(inputs:Int, outputs:Int, breeding:Bool = false) {
         this.inputs = inputs;
         this.outputs = outputs;
-        
+
         connections = new Array<Connection>();
         nodes = new Array<Node>();
 
@@ -172,12 +172,12 @@ class Genome {
                 }
 
                 if(Math.random() < 0.5) {
-                    offspring.connections.push(c);
+                    offspring.connections.push(c.clone());
                 } else {
-                    offspring.connections.push(mate.connections[matesConnection]);
+                    offspring.connections.push(mate.connections[matesConnection].clone());
                 }
             } else {
-                offspring.connections.push(c);
+                offspring.connections.push(c.clone());
                 active = c.active;
             }
 
@@ -221,12 +221,16 @@ class Genome {
     }
 
     public function repairConnections():Void {
+        for(n in nodes) n.connections = new Array<Connection>();
+
         for(c in connections) {
             var input:Node = findNodeById(c.input.id);
             var output:Node = findNodeById(c.output.id);
 
             c.input = input;
             c.output = output;
+
+            input.connections.push(c);
         }
 
     }
@@ -239,9 +243,13 @@ class Genome {
     }
 
     public function clone():Genome {
-        var g:Genome = new Genome(inputs, outputs);
+        var g:Genome = new Genome(inputs, outputs, true);
+        g.layers = layers;
+        g.biasNodeId = biasNodeId;
+
         for(n in nodes) g.nodes.push(n.clone());
         for(c in connections) g.connections.push(c.clone());
+
         g.repairConnections();
 
         return g;

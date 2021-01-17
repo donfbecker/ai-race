@@ -55,4 +55,11 @@ class Camera {
 		arena.scaleX /= 1.5;
 		arena.scaleY /= 1.5;
 	}
+
+	public function zoomToFit():Void {
+		while(arena.width > stage.stageWidth || arena.height > stage.stageHeight) {
+			arena.scaleX /= 1.5;
+			arena.scaleY /= 1.5;
+		}
+	}
 }

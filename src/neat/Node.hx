@@ -2,7 +2,7 @@ package neat;
 
 class Node {
     public var id:Int;
-    public var connections:Array<Connection>;
+    public var connections:Array<Connection> = new Array<Connection>();
     public var layer:Int;
 
     public var inputSum:Float = 0;
@@ -10,7 +10,6 @@ class Node {
 
     public function new(id:Int) {
         this.id = id;
-        this.connections = new Array<Connection>();
     }
 
     public function engage() {
