@@ -25,7 +25,7 @@ class Population {
 
     public function tick():Void {
         ticks++;
-        if(ticks > 300 + (Std.int(generation/10) * 50)) {
+        if(ticks > 300 + (Std.int(generation/100) * 50)) {
             breed();
             ticks = 0;
         } else {
