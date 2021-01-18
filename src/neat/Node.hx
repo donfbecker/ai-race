@@ -35,14 +35,14 @@ class Node {
         if(node.layer < layer) {
             // If the target node's layer is less, then it's output
             // is connected to our input
-            for(c in connections) {
+            for(c in node.connections) {
                 if(c.output == this) return true;
             }
         } else {
             // If the target node's layer is more, then it's input
             // is connected to our output
             for(c in connections) {
-                if(c.input == this) return true;
+                if(c.output == node) return true;
             }
         }
 
