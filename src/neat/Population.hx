@@ -2,6 +2,11 @@ package neat;
 
 import openfl.geom.Point;
 
+#if cpp
+import sys.io.File;
+import sys.io.FileOutput;
+#end
+
 class Population {
     private var species:Array<Species> = new Array<Species>();
     private var organisms:Array<Organism> = new Array<Organism>();
@@ -46,6 +51,16 @@ class Population {
         for(o in organisms) {
             o.reset();
         }
+
+        #if cpp
+            // If we are using CPP, then dump best genome to file
+            var champion:Organism = organisms[0];
+            for(o in organisms) if(o.fitness > champion.fitness) champion = o;
+
+            var out:FileOutput = File.write("generation" + generation + ".txt");
+            out.writeString(champion.genome.asText());
+            out.close();
+        #end
 
         generation++;
     }

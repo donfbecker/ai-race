@@ -233,6 +233,11 @@ class Genome {
             input.connections.push(c);
         }
 
+        // Make sure all output nodes are the same layer
+        var layer:Int = 0;
+        for(i in inputs...(inputs+outputs)) if(nodes[i].layer > layer) layer = nodes[i].layer;
+        for(i in inputs...(inputs+outputs)) nodes[i].layer = layer;
+        layers = layer+1;
     }
 
     public function findNodeById(id:Int):Node {
@@ -253,5 +258,18 @@ class Genome {
         g.repairConnections();
 
         return g;
+    }
+
+    public function asText():String {
+        var text:String = "inputs " + inputs + "\n";
+        text += "outputs " + outputs + "\n";
+        text += "bias " + biasNodeId + "\n";
+
+        for(n in nodes) text += "node " + n.id + " " + n.layer + "\n";
+        for(c in connections) {
+            if(c.active) text += "connection " + c.innovationId + " " + c.weight + " " + c.input.id + " " + c.output.id + "\n";
+        }
+
+        return text;
     }
 }
