@@ -10,11 +10,12 @@ import sys.io.FileOutput;
 class Population {
     private var species:Array<Species> = new Array<Species>();
     private var organisms:Array<Organism> = new Array<Organism>();
-    
+
     private var size:Int;
     public var generation:Int = 1;
     private var averageFitnessSum:Float;
     private var averageFitness:Float;
+    private var champion:Organism;
 
     private var ticks:Int = 0;
 
@@ -29,7 +30,7 @@ class Population {
 
     public function tick():Void {
         ticks++;
-        if(ticks > 300 + (Std.int(generation/100) * 50)) {
+        if(ticks > 300 + generation) {
             breed();
             ticks = 0;
         } else {
@@ -46,7 +47,16 @@ class Population {
         cullSpecies();
         killStaleSpecies();
         killBadSpecies();
-        reincarnate();
+
+        // if we don't have any species left, just mutate everything
+        if(species.length > 0) {
+            reincarnate();
+        } else {
+            for (o in organisms) {
+                o.genome.mutate();
+            }
+        }
+
 
         for(o in organisms) {
             o.reset();
@@ -87,7 +97,11 @@ class Population {
     }
 
     private function calculateFitness():Void {
-        for(o in organisms) o.calculateFitness();
+        champion = organisms[0];
+        for(o in organisms) {
+            o.calculateFitness();
+            if(o.fitness > champion.fitness) champion = o;
+        }
     }
 
     private function sortSpecies():Void {

@@ -129,22 +129,38 @@ class Genome {
         connections.push(new Connection(connections[r].input, node, 1, getInnovationId(connections[r].input, node)));
         connections.push(new Connection(node, connections[r].output, connections[r].weight, getInnovationId(node, connections[r].output)));
         node.layer = connections[r].input.layer + 1;
-        if(connections[r].output.layer <= node.layer) {
-            connections[r].output.layer = node.layer + 1;
+        while(connections[r].output.layer <= node.layer) {
+            connections[r].output.layer++;
         }
     }
 
     private function addNewConnection():Void {
-        if(fullyConnected()) return;
+        // Choose two random starting nodes
+        var s1:Int = Std.int(Math.random() * (nodes.length - 1));
+        var s2:Int = Std.int(Math.random() * (nodes.length - 1));
 
-        // Choose two random nodes
-        var n1:Int;
-        var n2:Int;
+        // If we happen to pick the same random starting nodes, just bail
+        if(s1 == s2) return;
+
+        // Start at the two random nodes, and loop around until we find
+        // a suitable place to make a new connection
+        var n1:Int = s1;
+        var n2:Int = s2;
+        var found:Bool = false;
         do {
-            n1 = Std.int(Math.random() * nodes.length - 1);
-            n2 = Std.int(Math.random() * nodes.length - 1);
-        } while(nodes[n1].layer == nodes[n2].layer || nodes[n1].isConnectedTo(nodes[n2]));
+            if(nodes[n1].layer != nodes[n2].layer && !nodes[n1].isConnectedTo(nodes[n2])) {
+                found = true;
+                break;
+            }
 
+            if(++n2 >= nodes.length) n2 = 0;
+            if(n2 == s2) if(++n1 >= nodes.length) n1 = 0;
+        } while(n1 != s1);
+
+        // If we didn't find an available connection, just bail.
+        if(!found) return;
+
+        // Make sure n1 is in a lower layer than n2
         if(nodes[n1].layer > nodes[n2].layer) {
             var temp:Int = n1;
             n1 = n2;
@@ -188,26 +204,6 @@ class Genome {
         offspring.repairConnections();
 
         return offspring;
-    }
-
-    public function fullyConnected():Bool {
-        var total:Int = 0;
-        var npl:Map<Int, Int> = new Map<Int, Int>();
-        for(n in nodes) {
-            if(npl[n.layer] == null) {
-                npl[n.layer] = 1;
-            } else {
-                npl[n.layer]++;
-            }
-        }
-
-        for(i in 0...layers) {
-            for(j in (i+1)...layers) {
-                total += npl[i] * npl[j];
-            }
-        }
-
-        return total == connections.length;
     }
 
     private function findMatchingConnection(innovationId:Int):Int {
