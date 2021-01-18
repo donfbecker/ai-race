@@ -45,11 +45,11 @@ class NeatDriver extends Organism {
         var outputs:Array<Float> = genome.feedForward(inputs);
 
         // Translate outputs to keys
-        var up:Bool = (outputs[0] >= 0.9);
-		var down:Bool = (outputs[1] >= 0.9);
-		var left:Bool = (outputs[2] >= 0.9);
-		var right:Bool = (outputs[3] >= 0.9);
-        var space:Bool = (outputs[4] >= 0.9);
+        var up:Bool = (outputs[0] >= 0.5);
+		var down:Bool = (outputs[1] >= 0.5);
+		var left:Bool = (outputs[2] >= 0.5);
+		var right:Bool = (outputs[3] >= 0.5);
+        var space:Bool = (outputs[4] >= 0.5);
 
         car.tick(up, down, left, right, space);
 

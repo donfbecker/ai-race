@@ -5,7 +5,6 @@ import openfl.geom.Point;
 class Population {
     private var species:Array<Species> = new Array<Species>();
     private var organisms:Array<Organism> = new Array<Organism>();
-    private var culled:Array<Organism> = new Array<Organism>();
     
     private var size:Int;
     public var generation:Int = 1;
@@ -42,7 +41,6 @@ class Population {
         cullSpecies();
         killStaleSpecies();
         killBadSpecies();
-        cullOrganisms();
         reincarnate();
 
         for(o in organisms) {
@@ -107,45 +105,23 @@ class Population {
         }
     }
 
-    private function cullOrganisms():Void {
-        culled = new Array<Organism>();
-
-        for(o in organisms) {
-            var found:Bool = false;
-            for(s in species) {
-                if(s.organisms.contains(o)) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if(!found) {
-                culled.push(o);
-            }
-        }
-    }
-
     private function reincarnate():Void {
         var newGenomes:Array<Genome> = new Array<Genome>();
 
-        for(s in species) {
-            newGenomes.push(s.organisms[0].genome.clone());
+        // Sometimes the average fitness is 0, which breaks things
+        if(averageFitnessSum > 0) {
+            for(s in species) {
+                if(s.organisms.length > 0) {
+                    newGenomes.push(s.organisms[0].genome.clone());
 
-            var size:Int = Math.floor(s.averageFitness / averageFitnessSum * organisms.length) - 1;
-            for(i in 0...size) newGenomes.push(s.breed());
+                    var size:Int = Math.floor(s.averageFitness / averageFitnessSum * organisms.length) - 1;
+                    for(i in 0...size) newGenomes.push(s.breed());
+                }
+            }
         }
 
         while(newGenomes.length < organisms.length) {
             newGenomes.push(species[0].breed());
-        }
-
-        var top:Float = 0;
-        var best:Organism = organisms[0];
-        for(o in organisms) {
-            if(o.fitness > top) {
-                best = o;
-                top = o.fitness;
-            }
         }
 
         for(i in 0...organisms.length) {
