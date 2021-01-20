@@ -29,17 +29,17 @@ class NeatDriver extends Organism {
 		p.x = fx + (car.speedP * lead);
 		p.y = 0;
 		p = car.localToGlobal(p);
-		inputs.push(car.track.hitTestPoint(p.x, p.y, true) ? 1 : 0);
+		inputs.push(car.track.hitTestPoint(p.x, p.y, true) ? 1 : -1);
 
 		p.x = fx;
 		p.y = -fy;
 		p = car.localToGlobal(p);
-		inputs.push(car.track.hitTestPoint(p.x, p.y, true) ? 1 : 0);
+		inputs.push(car.track.hitTestPoint(p.x, p.y, true) ? 1 : -1);
 
 		p.x = fx;
 		p.y = fy;
 		p = car.localToGlobal(p);
-        inputs.push(car.track.hitTestPoint(p.x, p.y, true) ? 1 : 0);
+        inputs.push(car.track.hitTestPoint(p.x, p.y, true) ? 1 : -1);
         
         // Process the network
         var outputs:Array<Float> = genome.feedForward(inputs);

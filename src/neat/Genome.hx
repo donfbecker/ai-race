@@ -110,14 +110,27 @@ class Genome {
         if(r < 0.03) {
             addNewNode();
         }
+
+        repairConnections();
     }
 
     private function addNewNode():Void {
-        var r:Int;
+        var r:Int = Std.int(Math.random() * connections.length);
+        var c:Int = r;
+        var found:Bool = false;
         do {
-            r = Std.int(Math.random() * connections.length);
-        } while(connections[r].input == nodes[biasNodeId]);
+            if(connections[r].input != nodes[biasNodeId] && findNodeById(connections[r].innovationId) == null) {
+                found = true;
+                break;
+            }
 
+            if(++c >= connections.length) c = 0;
+        } while(c != r);
+
+        // If we didn't find a place to put a node, just bail
+        if(!found) return;
+
+        // Disable the old connection
         connections[r].active = false;
 
         // Set the node ID as the innovation ID of the connection
@@ -228,6 +241,11 @@ class Genome {
 
             input.connections.push(c);
         }
+
+        // Repair layers
+        for(n in nodes) n.layer = 0;
+        for(i in 0...inputs) nodes[i].setLayer(0);
+        nodes[biasNodeId].setLayer(0);
 
         // Make sure all output nodes are the same layer
         var layer:Int = 0;

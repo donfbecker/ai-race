@@ -24,26 +24,26 @@ class Node {
         }
     }
 
+    public function setLayer(layer:Int):Void {
+        this.layer = layer;
+        for(c in connections) {
+            if(c.output.layer <= layer) c.output.setLayer(layer+1);
+        }
+    }
+
     private function sigmoid(f:Float):Float {
         return 1 / (1 + Math.pow(2.718281828459045, -4.9 * f));
     }
 
     public function isConnectedTo(node:Node):Bool {
-        // Nodes in the same layer can't be connected
-        if(node.layer == layer) return false;
+        // Check all the connections for this node
+        for(c in connections) {
+            if(c.output == node) return true;
+        }
 
-        if(node.layer < layer) {
-            // If the target node's layer is less, then it's output
-            // is connected to our input
-            for(c in node.connections) {
-                if(c.output == this) return true;
-            }
-        } else {
-            // If the target node's layer is more, then it's input
-            // is connected to our output
-            for(c in connections) {
-                if(c.output == node) return true;
-            }
+        // Check all the connections on the other node
+        for(c in node.connections) {
+            if(c.output == this) return true;
         }
 
         return false;

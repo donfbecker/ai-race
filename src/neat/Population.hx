@@ -64,9 +64,6 @@ class Population {
 
         #if cpp
             // If we are using CPP, then dump best genome to file
-            var champion:Organism = organisms[0];
-            for(o in organisms) if(o.fitness > champion.fitness) champion = o;
-
             var out:FileOutput = File.write("generation" + generation + ".txt");
             out.writeString(champion.genome.asText());
             out.close();
@@ -106,6 +103,17 @@ class Population {
 
     private function sortSpecies():Void {
         for(s in species) s.sort();
+
+        species.sort(function (a, b) {
+            if(a.organisms.length > 0 && b.organisms.length == 0) return -1;
+            if(a.organisms.length == 0 && b.organisms.length > 0) return 1;
+            if(a.organisms.length == 0 && b.organisms.length == 0) return 0;
+
+            if(a.organisms[0].fitness > b.organisms[0].fitness) return -1;
+            if(a.organisms[0].fitness < b.organisms[0].fitness) return 1;
+
+            return 0;
+        });
     }
 
     private function cullSpecies():Void {
