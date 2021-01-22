@@ -48,6 +48,13 @@ class Population {
         killStaleSpecies();
         killBadSpecies();
 
+        // Sort organisms by fitness
+        organisms.sort(function (a, b) {
+            if(a.fitness > b.fitness) return -1;
+            if(a.fitness < b.fitness) return 1;
+            return 0;
+        });
+
         // if we don't have any species left, just mutate everything
         if(species.length > 0) {
             reincarnate();
@@ -65,7 +72,11 @@ class Population {
         #if cpp
             // If we are using CPP, then dump best genome to file
             var out:FileOutput = File.write("generation" + generation + ".txt");
-            out.writeString(champion.genome.asText());
+            for(o in organisms) {
+                out.writeString("genome " + o.fitness + "\n");
+                out.writeString(o.genome.asText());
+                out.writeString("\n");
+            }
             out.close();
         #end
 

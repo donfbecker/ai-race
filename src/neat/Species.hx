@@ -77,7 +77,7 @@ class Species {
         organisms.sort(function (a, b) {
             if(a.fitness > b.fitness) return -1;
             if(a.fitness < b.fitness) return 1;
-            else return 0;
+            return 0;
         });
 
         if(organisms[0].fitness > topFitness) {

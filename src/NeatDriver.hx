@@ -4,9 +4,8 @@ import flash.geom.Point;
 
 class NeatDriver extends Organism {
     private var car:Car;
-
     private var fx:Int = 225;
-	private var fy:Int = 160;
+    private var fy:Int = 160;
     private var lead:Float = 0;
 
     private var startingPosition:Point;
@@ -23,23 +22,33 @@ class NeatDriver extends Organism {
     public override function tick():Void {
         if(!alive) return;
 
-        var inputs:Array<Float> = new Array<Float>();
+        var inputs:Array<Float> = [0, 0, 0];
         var p:Point = new Point(100, 0);
 
-		p.x = fx + (car.speedP * lead);
-		p.y = 0;
-		p = car.localToGlobal(p);
-		inputs.push(car.track.hitTestPoint(p.x, p.y, true) ? 1 : -1);
+        for(i in 0...20) {
+            var percent:Float = (i / 20);
+            if(inputs[0] == 0) {
+                p.x = Std.int(fx + (car.speedP * lead) * percent);
+                p.y = 0;
+                p = car.localToGlobal(p);
+                if(!car.track.hitTestPoint(p.x, p.y, true)) inputs[0] = percent;
+            }
 
-		p.x = fx;
-		p.y = -fy;
-		p = car.localToGlobal(p);
-		inputs.push(car.track.hitTestPoint(p.x, p.y, true) ? 1 : -1);
+            if(inputs[1] == 0) {
+                p.x = Std.int(fx * percent);
+                p.y = Std.int(-fy * percent);
+                p = car.localToGlobal(p);
+                if(!car.track.hitTestPoint(p.x, p.y, true)) inputs[1] = percent;
+            }
 
-		p.x = fx;
-		p.y = fy;
-		p = car.localToGlobal(p);
-        inputs.push(car.track.hitTestPoint(p.x, p.y, true) ? 1 : -1);
+            if(inputs[2] == 0) {
+                p.x = Std.int(fx * percent);
+                p.y = Std.int(fy * percent);
+                p = car.localToGlobal(p);
+                if(!car.track.hitTestPoint(p.x, p.y, true)) inputs[2] = percent;
+            }
+        }
+        for(i in 0...3) if(inputs[i] == 0) inputs[i] = 1;
         
         // Process the network
         var outputs:Array<Float> = genome.feedForward(inputs);

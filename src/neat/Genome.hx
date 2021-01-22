@@ -281,7 +281,7 @@ class Genome {
 
         for(n in nodes) text += "node " + n.id + " " + n.layer + "\n";
         for(c in connections) {
-            if(c.active) text += "connection " + c.innovationId + " " + c.weight + " " + c.input.id + " " + c.output.id + "\n";
+            text += "connection " + c.innovationId + " " + c.weight + " " + (c.active ? 1 : 0) + " " + c.input.id + " " + c.output.id + "\n";
         }
 
         return text;
