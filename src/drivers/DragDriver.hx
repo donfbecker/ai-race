@@ -1,4 +1,6 @@
-import openfl.geom.Point;
+package drivers;
+
+import cars.Car;
 
 class DragDriver {
 	private var car:Car;
@@ -6,7 +8,7 @@ class DragDriver {
 	private var lastTick:Int = 0;
 	private var thisTick:Int = 0;
 
-	public function new(car:Car, lead:Int = 7) {
+	public function new(track:Track, car:Car) {
 		this.car = car;
 		lastTick = Math.round(haxe.Timer.stamp() * 1000);
 	}

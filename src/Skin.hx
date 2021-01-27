@@ -7,10 +7,12 @@ import openfl.Assets;
 class Skin {
 	// Tile array
 	public var tile:Array<BitmapData> = new Array<BitmapData>();
+	public var tileWidth:Int = 300;
+	public var tileHeight:Int = 300;
 
-	public function new(tileWidth:Int, tileHeight:Int) {
+	public function new(bitmap:String, tileWidth:Int, tileHeight:Int) {
 		// Load the embedded skin
-		var skinBitmap:Bitmap = new Bitmap(Assets.getBitmapData('assets/worn_track.jpg'));
+		var skinBitmap:Bitmap = new Bitmap(Assets.getBitmapData(bitmap));
 
 		// Find the number of tiles
 		var tilesX:Int = Std.int(skinBitmap.width / tileWidth);

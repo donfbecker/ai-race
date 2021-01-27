@@ -6,6 +6,7 @@ class Genome {
 
     private var inputs:Int;
     private var outputs:Int;
+    private var hidden:Int;
 
     private var layers:Int = 2;
     private var biasNodeId:Int = 0;
@@ -36,7 +37,7 @@ class Genome {
         nodes.push(new Node(biasNodeId));
         nodes[biasNodeId].layer = 0;
 
-        // Connect all inputs and outputs
+        // Connect all inputs to outputs
         for(i in 0...inputs) {
             for(o in inputs...(inputs+outputs)) {
                 var c:Connection = new Connection(nodes[i], nodes[o], -1 + (Math.random() * 2), getInnovationId(nodes[i], nodes[o]));
@@ -45,7 +46,7 @@ class Genome {
             }
         }
 
-        // Connect the bias node
+        // Connect the bias node to outputs
         for(o in inputs...(inputs+outputs)) {
             var c:Connection = new Connection(nodes[biasNodeId], nodes[o], -1 + (Math.random() * 2), getInnovationId(nodes[biasNodeId], nodes[o]));
             connections.push(c);

@@ -10,16 +10,16 @@ import sys.io.FileOutput;
 class Population {
     private var species:Array<Species> = new Array<Species>();
     private var organisms:Array<Organism> = new Array<Organism>();
-
     private var size:Int;
-    public var generation:Int = 1;
+    
     private var averageFitnessSum:Float;
     private var averageFitness:Float;
     private var champion:Organism;
-
     private var ticks:Int = 0;
-
     private var startingPositions:Array<Point> = new Array<Point>();
+
+    public var generation:Int = 1;
+    public var alive:Int = 0;
 
     public function new() {
     }
@@ -30,7 +30,12 @@ class Population {
 
     public function tick():Void {
         ticks++;
-        if(ticks > 300 + generation) {
+
+        // Check if anyone is still alive
+        alive = 0;
+        for(o in organisms) if(o.alive) alive++;
+
+        if(alive < 5 || ticks > 6000 + (Std.int(generation) / 50) * 50) {
             breed();
             ticks = 0;
         } else {
@@ -63,8 +68,7 @@ class Population {
                 o.genome.mutate();
             }
         }
-
-
+        
         for(o in organisms) {
             o.reset();
         }

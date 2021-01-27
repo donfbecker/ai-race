@@ -15,14 +15,18 @@ import flash.ui.Keyboard;
 import flash.events.TimerEvent;
 import flash.utils.Timer;
 
+import cars.Car;
+import drivers.NeatDriver;
+import drivers.Driver;
+
 import neat.Population;
 
 class Main extends Sprite {
 	private var numberOfCars:Int = 200;
 
 	// Tile info
-	private var tileWidth(default, never):Int = 300;
-	private var tileHeight(default, never):Int = 300;
+	private var tileWidth:Int = 300;
+	private var tileHeight:Int = 300;
 
 	// Setup an object for keyboard states
 	private var key:Map<Int, Bool> = [];
@@ -74,14 +78,14 @@ class Main extends Sprite {
 			],
 		
 			[
-				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-				[1, 1, 1, 1, 3, 5, 7, 7, 6, 4, 1, 1],
-				[1, 1, 1, 1, 17, 22, 1, 1, 21, 11, 14, 1],
-				[1, 1, 1, 1, 8, 1, 1, 1, 1, 1, 8, 1],
-				[1, 13, 7, 7, 20, 1, 3, 5, 7, 7, 20, 1],
-				[1, 23, 4, 1, 1, 3, 9, 22, 1, 1, 1, 1],
-				[1, 21, 11, 7, 7, 12, 22, 1, 1, 1, 1, 1],
-				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+				[1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1],
+				[1,  1,  1,  1,  3,  5,  7,  7,  6,  4,  1,  1],
+				[1,  1,  1,  1, 17, 22,  1,  1, 21, 11, 14,  1],
+				[1,  1,  1,  1,  8,  1,  1,  1,  1,  1,  8,  1],
+				[1, 13,  7,  7, 20,  1,  3,  5,  7,  7, 20,  1],
+				[1, 23,  4,  1,  1,  3,  9, 22,  1,  1,  1,  1],
+				[1, 21, 11,  7,  7, 12, 22,  1,  1,  1,  1,  1],
+				[1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1]
 			],
 		
 			[
@@ -120,9 +124,10 @@ class Main extends Sprite {
 		];
 
 		// Create a Sprite for the track
-		track = new Track(trackTiles[3], tileWidth, tileHeight);
-		track.x = -((track.startx - 1) * tileWidth) - ((stage.stageWidth - tileWidth) / 2);
-		track.y = -(track.starty * tileHeight) + ((stage.stageHeight - tileHeight) / 2);
+		var skin:Skin = new Skin('assets/worn_track.jpg', 300, 300);
+		track = new Track(trackTiles[3], skin);
+		track.x = -((track.startX - 1) * tileWidth) - ((stage.stageWidth - tileWidth) / 2);
+		track.y = -(track.startY * tileHeight) + ((stage.stageHeight - tileHeight) / 2);
 		addChild(track);
 
 		// Add the mini radar
@@ -148,20 +153,16 @@ class Main extends Sprite {
 		// Add cars to the track
 		for (i in 0...numberOfCars) {
 			car[i] = new Car(track, car);
-			car[i].x = ((track.startx) * tileWidth) + (tileWidth / 2);
+			car[i].x = ((track.startX) * tileWidth) + (tileWidth / 2);
 			#if neat
-				car[i].y = ((track.starty) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
+				car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
+				driver[i] = new NeatDriver(track, car[i]);
+				population.addOrganism(driver[i]);
 			#else
-				car[i].y = ((track.starty) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
+				car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
+				if (i > 0) driver[i] = new Driver(track, car[i]);
 			#end
-			if (i > 0) {
-				#if neat
-					driver[i] = new NeatDriver(car[i], Math.random() * 10);
-					population.addOrganism(driver[i]);
-				#else
-					driver[i] = new Driver(car[i], Math.random() * 10);
-				#end
-			}
+			
 			track.addChild(car[i]);
 			track.radar.addChild(new Blip(car[i], track, 1 / 30, (i > 0) ? 0xff0000 : 0x00ff00));
 		}
@@ -188,7 +189,7 @@ class Main extends Sprite {
 		#if neat
 			population.tick();
 
-			output.text = "Generation: " + population.generation;
+			output.text = "Generation: " + population.generation + "\nAlive: " + population.alive;
 			output.y = stage.stageHeight - output.height;
 		#else
 			// Let the car handle its movement

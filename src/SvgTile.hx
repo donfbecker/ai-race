@@ -4,7 +4,7 @@ import flash.geom.ColorTransform;
 import format.SVG;
 import openfl.Assets;
 
-class TileBoundsSvg extends Sprite {
+class SvgTile extends Sprite {
 	public function new(tile:Int, color:Int = 0, scale:Float = 1) {
 		super();
 

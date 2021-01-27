@@ -1,3 +1,5 @@
+package cars;
+
 import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.geom.Point;
@@ -8,7 +10,7 @@ class Car extends Sprite {
 	public var CarSprite:Bitmap = new Bitmap(Assets.getBitmapData('assets/car.png'));
 
 	// track and movement variables
-	public var track:Sprite;
+	public var track:Track;
 	public var onTrack:Bool;
 	public var halfX:Float;
 	public var halfY:Float;
@@ -25,6 +27,7 @@ class Car extends Sprite {
 	public var speed:Float = 0;
 	public var speedP:Float = 0;
 	public var velocity:GeometryVector = new GeometryVector(0, 0);
+	public var collisions:Int = 0;
 
 	// Private vars
 	private var speedR:Float = 0;
@@ -36,11 +39,9 @@ class Car extends Sprite {
 	private var wheelRot:Float = 1 * (Math.PI / 180);
 	private var collisionPoint:Array<Int> = [0, -12, 12];
 
-	// Variables for AI
-	public var distanceTraveled:Float = 0;
-	public var hitWall:Bool = false;
+	
 
-	public function new(track:Sprite, opponent:Array<Car> = null, spriteBitmap:Bitmap = null) {
+	public function new(track:Track, opponent:Array<Car> = null, spriteBitmap:Bitmap = null) {
 		super();
 
 		// Save parameters
@@ -122,9 +123,8 @@ class Car extends Sprite {
 		velocity.x *= 0.995;
 		velocity.y *= 0.995;
 
-		speedP = velocity.getMag();
-		distanceTraveled += speedP * (d >= 0 ? 1 : -1);
-		speed = Math.floor(((speedP / 0.033) * 3600) * MPP);
+		speedP = velocity.getMag() * (d >= 0 ? 1 : -1);
+		speed = Math.floor(((Math.abs(speedP) / 0.033) * 3600) * MPP);
 
 		// Don't idle forward
 		if (!up && !down && speedP <= 0.5) {
@@ -138,7 +138,7 @@ class Car extends Sprite {
 			p.y = collisionPoint[c];
 			p = this.localToGlobal(p);
 			if (!track.hitTestPoint(p.x, p.y, true)) {
-				hitWall = true;
+				collisions++;
 				x -= velocity.x;
 				y -= velocity.y;
 				if (c == 0) {
@@ -159,5 +159,7 @@ class Car extends Sprite {
 				break;
 			}
 		}
+
+		
 	}
 }

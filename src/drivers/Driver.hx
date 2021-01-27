@@ -1,15 +1,20 @@
+package drivers;
+
 import flash.geom.Point;
 
+import cars.Car;
+
 class Driver {
+	private var track:Track;
 	private var car:Car;
 
 	private var fx:Int = 225;
 	private var fy:Int = 160;
 	private var lead:Float = 0;
 
-	public function new(car:Car, lead:Float = 7) {
+	public function new(track:Track, car:Car) {
 		this.car = car;
-		this.lead = lead;
+		this.lead = Math.random() * 10;
 	}
 
 	public function tick():Void {

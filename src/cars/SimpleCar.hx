@@ -1,3 +1,5 @@
+package cars;
+
 import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.geom.Point;
@@ -13,8 +15,6 @@ class SimpleCar extends Sprite {
 
 	private var ontrack:Bool;
 	private var target:Sprite;
-	private var xmod:Int;
-	private var ymod:Int;
 
 	// Constants
 	private var ToRad(default, never):Float = (Math.PI / 180);
@@ -32,7 +32,7 @@ class SimpleCar extends Sprite {
 	public var speed:Float = 0;
 	public var speedP:Float = 0;
 
-	public function new(track:Sprite, ontrack:Bool = true, target:Sprite = null, xmod:Int = 1, ymod:Int = 1) {
+	public function new(track:Sprite, ontrack:Bool = true, target:Sprite = null) {
 		super();
 		FPP = IPP / 12;
 		MPP = FPP / 5280;
@@ -41,8 +41,6 @@ class SimpleCar extends Sprite {
 		this.track = track;
 		this.ontrack = ontrack;
 		this.target = target;
-		this.xmod = xmod;
-		this.ymod = ymod;
 
 		// Draw the sprite
 		carSprite.x = -10;

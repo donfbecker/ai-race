@@ -6,14 +6,17 @@ import flash.geom.Rectangle;
 
 class Track extends Sprite {
 	// Track layers
-	public var layerSkin(default, never):Sprite = new Sprite();
+	public var layerSkin:Sprite = new Sprite();
 
 	// Where to start
-	public var startx:Int = 0;
-	public var starty:Int = 0;
+	public var startX:Int = 0;
+	public var startY:Int = 0;
+	
+	// Path checkpoints
+	public var checkpoints:Array<Array<Int>>;
 
 	// Radar
-	public var radar(default, never):Sprite = new Sprite();
+	public var radar:Sprite = new Sprite();
 
 	// Tiles
 	private var skin:Skin;
@@ -23,11 +26,12 @@ class Track extends Sprite {
 	private var tilesX:Int;
 	private var tilesY:Int;
 
-	public function new(tiles:Array<Array<Int>>, tileWidth:Int, tileHeight:Int) {
+	public function new(tiles:Array<Array<Int>>, skin:Skin) {
 		super();
-		this.tiles = tiles;
-		this.tileWidth = tileWidth;
-		this.tileHeight = tileHeight;
+		this.tiles      = tiles;
+		this.skin       = skin;
+		this.tileWidth  = skin.tileWidth;
+		this.tileHeight = skin.tileHeight;
 
 		// Figure out the track width and height
 		tilesY = this.tiles.length;
@@ -37,26 +41,6 @@ class Track extends Sprite {
 		radar.graphics.beginFill(0x000000);
 		radar.graphics.drawRect(0, 0, tilesX * 10, tilesY * 10);
 		radar.graphics.endFill();
-
-		// Create the skin
-		skin = new Skin(tileWidth, tileHeight);
-
-		// Mask layer for debugging
-		/*
-			var mx:int = tileWidth * this.tilesX;
-			var my:int = tileHeight * this.tilesY;
-			trace(mx + 'x' + my);
-			for (var y:int = 0; y < my; y++) {
-				//trace('Checking ' + y);
-				for (var x:int = 0; x < mx; x++) {
-					if (this.hitTestPoint(x, y, false)) {
-						var dtx:int = int(x / 300);
-						var dty:int = int(y / 300);
-						BitmapData(skin.tile[this.tiles[dty][dtx] - 1]).setPixel(x % 300, y % 300, 0);
-					}
-				}
-			}
-		 */
 
 		// Generate the map and radar
 		var foundStart:Bool = false;
@@ -69,7 +53,7 @@ class Track extends Sprite {
 				layerSkin.addChild(b);
 
 				// Radar
-				var t:TileBoundsSvg = new TileBoundsSvg(tiles[ty][tx], 0xffffff, 1 / 30);
+				var t:SvgTile = new SvgTile(tiles[ty][tx], 0xffffff, 1 / 30);
 				t.x = tx * 10;
 				t.y = ty * 10;
 				radar.addChild(t);
@@ -77,14 +61,16 @@ class Track extends Sprite {
 				// Check for where we should start the car
 				if (!foundStart && tiles[ty][tx] == 7) {
 					foundStart = true;
-					startx = tx;
-					starty = ty;
+					startX = tx;
+					startY = ty;
 				}
 			}
 		}
 
 		// Add the layers
 		addChild(layerSkin);
+
+		checkpoints = findPath();
 	}
 
 	override public function hitTestPoint(x:Float, y:Float, shapeFlag:Bool = false):Bool {
@@ -286,5 +272,63 @@ class Track extends Sprite {
 		}
 
 		return false;
+	}
+
+	public function getTileXY(x:Float, y:Float):Array<Int> {
+		return [Std.int(x / tileWidth), Std.int(y / tileHeight)];
+	}
+
+	public function findPath():Array<Array<Int>> {
+		var neighbors:Array<Array<Array<Int>>> = [
+			[], // Tile 0 (unused)
+			[], // Tile 1
+			[], // Tile 2
+			[], // Tile 3
+			[], // Tile 4
+			[[-1, 1], [1, 0]], // Tile 5
+			[[-1, 0], [1, 1]], // Tile 6
+			[[-1, 0], [1, 0]], // Tile 7
+			[[0, -1], [0, 1]], // Tile 8
+			[[-1, 1], [1, -1]], // Tile 9
+			[[-1, -1], [1, 1]], // Tile 10
+			[[-1, -1], [1, 0]], // Tile 11
+			[[-1, 0], [1, -1]], // Tile 12
+			[[0, 1], [1, 0]], // Tile 13
+			[[-1, 0], [0, 1]], // Tile 14
+			[], // Tile 15
+			[], // Tile 16
+			[[0, 1], [1, -1]], // Tile 17
+			[[-1, -1], [0, 1]], // Tile 18
+			[[0, -1], [1, 0]], // Tile 19
+			[[-1, 0], [0, -1]], // Tile 20
+			[], // Tile 21
+			[], // Tile 22
+			[[0, -1], [1, 1]], // Tile 23
+			[[-1, 1], [0, -1]] // Tile 24
+		];
+
+		var path:Array<Array<Int>> = new Array<Array<Int>>();
+
+		// The first tile will always be the starting tile
+		var lastX:Int = startX;
+		var lastY:Int = startY;
+		var currX:Int = startX + 1;
+		var currY:Int = startY;
+
+		do {
+			path.push([currX, currY]);
+			var dX:Int = lastX - currX;
+			var dY:Int = lastY - currY;
+			var tile:Int = this.tiles[currY][currX];
+
+			var next:Array<Int> = (dX == neighbors[tile][0][0] && dY == neighbors[tile][0][1]) ? neighbors[tile][1] : neighbors[tile][0];
+
+			lastX = currX;
+			lastY = currY;
+			currX = currX + next[0];
+			currY = currY + next[1];
+		} while(lastX != startX || lastY != startY);
+
+		return path;
 	}
 }
