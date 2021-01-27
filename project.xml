@@ -4,7 +4,7 @@
 	<app main="Main" path="bin" file="race" />
 
 	<window background="#000000" fps="30" />
-	<window width="800" height="600" unless="mobile" />
+	<!-- <window width="800" height="600" unless="mobile" /> -->
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
 	<source path="src" />

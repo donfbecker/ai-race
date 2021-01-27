@@ -20,6 +20,7 @@ class Population {
 
     public var generation:Int = 1;
     public var alive:Int = 0;
+    public var lastDeath:Int = 0;
 
     public function new() {
     }
@@ -30,14 +31,20 @@ class Population {
 
     public function tick():Void {
         ticks++;
+        lastDeath++;
 
         // Check if anyone is still alive
+        var oldAlive:Int = alive;
         alive = 0;
         for(o in organisms) if(o.alive) alive++;
+        if(alive < oldAlive) {
+            lastDeath = 0;
+        }
 
-        if(alive < 5 || ticks > 6000 + (Std.int(generation) / 50) * 50) {
+        if(alive < 5 || lastDeath > 1800 || ticks > 6000) {
             breed();
             ticks = 0;
+            lastDeath = 0;
         } else {
             for(o in organisms) o.tick();
         }

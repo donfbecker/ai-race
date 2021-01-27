@@ -3,6 +3,8 @@ import flash.display.BitmapData;
 import flash.display.MovieClip;
 import flash.display.Shape;
 import flash.display.Sprite;
+import flash.display.StageAlign;
+import flash.display.StageScaleMode;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
 import flash.geom.Rectangle;
@@ -37,7 +39,7 @@ class Main extends Sprite {
 	private var output:TextField;
 	private var camera:Camera;
 	private var car:Array<Car> = new Array<Car>();
-	
+
 	#if neat
 	private var driver:Array<NeatDriver> = new Array<NeatDriver>();
 	private var population:Population = new Population();
@@ -52,6 +54,8 @@ class Main extends Sprite {
 
 	private function onAddedToStage(e:Event) {
 		removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+		stage.scaleMode = StageScaleMode.NO_SCALE;
+		stage.align = StageAlign.TOP_LEFT;
 
 		var trackTiles:Array<Array<Array<Int>>> = [
 			[
@@ -60,7 +64,7 @@ class Main extends Sprite {
 				[13, 14, 15, 16, 17, 18],
 				[19, 20, 21, 22, 23, 24]
 			],
-		 
+
 			[
 				[1, 1, 1, 1, 1, 1,1],
 				[1,13, 7, 6, 4, 1,1],
@@ -76,7 +80,7 @@ class Main extends Sprite {
 				[1,19,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,20,1],
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 			],
-		
+
 			[
 				[1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1],
 				[1,  1,  1,  1,  3,  5,  7,  7,  6,  4,  1,  1],
@@ -87,7 +91,7 @@ class Main extends Sprite {
 				[1, 21, 11,  7,  7, 12, 22,  1,  1,  1,  1,  1],
 				[1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1]
 			],
-		
+
 			[
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 				[1,13,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,14,1],
@@ -104,7 +108,7 @@ class Main extends Sprite {
 				[1,19,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,20,1],
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 			],
-		
+
 			[
 				[1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1],
 				[1, 13,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7, 14,  1],
@@ -136,7 +140,7 @@ class Main extends Sprite {
 
 		// Create a Sprite for the track
 		var skin:Skin = new Skin('assets/worn_track.jpg', 300, 300);
-		track = new Track(trackTiles[6], skin);
+		track = new Track(trackTiles[3], skin);
 		track.x = -((track.startX - 1) * tileWidth) - ((stage.stageWidth - tileWidth) / 2);
 		track.y = -(track.startY * tileHeight) + ((stage.stageHeight - tileHeight) / 2);
 		addChild(track);
@@ -173,7 +177,7 @@ class Main extends Sprite {
 				car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
 				if (i > 0) driver[i] = new Driver(track, car[i]);
 			#end
-			
+
 			track.addChild(car[i]);
 			track.radar.addChild(new Blip(car[i], track, 1 / 30, (i > 0) ? 0xff0000 : 0x00ff00));
 		}
@@ -213,7 +217,7 @@ class Main extends Sprite {
 			}
 		#end
 		camera.tick();
-		speedometer.text = cast(camera.target, Car).speed + "mph";	
+		speedometer.text = cast(camera.target, Car).speed + "mph";
 	}
 
 	private function handleKeyDown(e:KeyboardEvent):Void {
