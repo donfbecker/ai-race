@@ -46,6 +46,14 @@ class Track extends Sprite {
 		var foundStart:Bool = false;
 		for (ty in 0...tilesY) {
 			for (tx in 0...tilesX) {
+				// Check for where we should start the car
+				if (!foundStart && tiles[ty][tx] == 7) {
+					foundStart = true;
+					startX = tx;
+					startY = ty;
+					tiles[ty][tx] = 2;
+				}
+
 				// Skinned tile
 				var b:Bitmap = new Bitmap(skin.tile[tiles[ty][tx] - 1]);
 				b.x = tx * tileWidth;
@@ -57,13 +65,6 @@ class Track extends Sprite {
 				t.x = tx * 10;
 				t.y = ty * 10;
 				radar.addChild(t);
-
-				// Check for where we should start the car
-				if (!foundStart && tiles[ty][tx] == 7) {
-					foundStart = true;
-					startX = tx;
-					startY = ty;
-				}
 			}
 		}
 
@@ -92,7 +93,11 @@ class Track extends Sprite {
 
 		switch (this.tiles[ty][tx]) {
 			case 1: // blank tile
-			case 2: // blank tile
+				return false;
+
+			case 2: // Starting tile
+				if (y >= 10 && y <= 290)
+					return true;
 				return false;
 
 			case 3: // Lower right corner
@@ -282,7 +287,7 @@ class Track extends Sprite {
 		var neighbors:Array<Array<Array<Int>>> = [
 			[], // Tile 0 (unused)
 			[], // Tile 1
-			[], // Tile 2
+			[[-1, 0], [1, 0]], // Tile 2
 			[], // Tile 3
 			[], // Tile 4
 			[[-1, 1], [1, 0]], // Tile 5

@@ -26,5 +26,6 @@ class Blip extends Shape {
 	private function handleEnterFrame(e:Event):Void {
 		x = target.x * scale;
 		y = target.y * scale;
+		visible = target.visible;
 	}
 }

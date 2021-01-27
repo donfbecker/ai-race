@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="left-up" width="16" height="8" tilewidth="300" tileheight="300" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" source="worn_track.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="16" height="8">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,3,5,7,7,6,4,1,1,3,5,7,7,6,4,1,
+1,17,22,1,1,21,10,4,3,9,22,1,1,21,18,1,
+1,8,1,1,1,1,21,10,9,22,1,1,1,1,8,1,
+1,8,1,1,1,1,3,9,10,4,1,1,1,1,8,1,
+1,23,4,1,1,3,9,22,21,10,4,1,1,3,24,1,
+1,21,11,7,7,12,22,1,1,21,11,7,7,12,22,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+</map>
