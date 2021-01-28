@@ -38,7 +38,8 @@ class NeatDriver extends Organism {
         for(i in 0...20) {
             var percent:Float = (i / 20);
             if(inputs[0] == -1) {
-                p.x = Std.int((fx + car.speedP) * percent);
+                //p.x = Std.int((fx + car.speedP) * percent);
+                p.x = Std.int(fx * percent);
                 p.y = 0;
                 p = car.localToGlobal(p);
                 if(!track.hitTestPoint(p.x, p.y, true)) inputs[0] = percent;

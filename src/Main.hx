@@ -19,13 +19,12 @@ import flash.utils.Timer;
 
 import cars.Car;
 import drivers.NeatDriver;
+import drivers.QLDriver;
 import drivers.Driver;
 
 import neat.Population;
 
 class Main extends Sprite {
-	private var numberOfCars:Int = 200;
-
 	// Tile info
 	private var tileWidth:Int = 300;
 	private var tileHeight:Int = 300;
@@ -41,9 +40,14 @@ class Main extends Sprite {
 	private var car:Array<Car> = new Array<Car>();
 
 	#if neat
+	private var numberOfCars:Int = 200;
 	private var driver:Array<NeatDriver> = new Array<NeatDriver>();
 	private var population:Population = new Population();
+	#elseif qlearning
+	private var numberOfCars:Int = 1;
+	private var driver:Array<QLDriver> = new Array<QLDriver>();
 	#else
+	private var numberOfCars:Int = 4;
 	private var driver:Array<Driver> = new Array<Driver>();
 	#end
 
@@ -169,12 +173,13 @@ class Main extends Sprite {
 		for (i in 0...numberOfCars) {
 			car[i] = new Car(track, car);
 			car[i].x = ((track.startX) * tileWidth) + (tileWidth / 2);
+			car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
 			#if neat
-				car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
 				driver[i] = new NeatDriver(track, car[i]);
 				population.addOrganism(driver[i]);
+			#elseif qlearning
+				driver[i] = new QLDriver(track, car[i]);
 			#else
-				car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
 				if (i > 0) driver[i] = new Driver(track, car[i]);
 			#end
 
@@ -206,6 +211,8 @@ class Main extends Sprite {
 
 			output.text = "Generation: " + population.generation + "\nAlive: " + population.alive;
 			output.y = stage.stageHeight - output.height;
+		#elseif qlearning
+			for(d in driver) d.tick();
 		#else
 			// Let the car handle its movement
 			for (i in 0...numberOfCars) {
@@ -216,6 +223,7 @@ class Main extends Sprite {
 				}
 			}
 		#end
+		
 		camera.tick();
 		speedometer.text = cast(camera.target, Car).speed + "mph";
 	}
