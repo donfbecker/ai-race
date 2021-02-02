@@ -12,8 +12,6 @@ class NeatDriver extends Organism {
     private var fx:Int = 225;
     private var fy:Int = 200;
 
-    private var startingPosition:Point;
-
     // Variables for fitness
 	private var distanceTraveled:Float = 0;
     private var checkpoints:Int = 0;
@@ -25,8 +23,6 @@ class NeatDriver extends Organism {
 
         this.track = track;
         this.car = car;
-
-        this.startingPosition = new Point(car.x, car.y);
     }
 
     public override function tick():Void {
@@ -101,8 +97,9 @@ class NeatDriver extends Organism {
     }
 
     public override function reset():Void {
-        car.x = startingPosition.x;
-        car.y = startingPosition.y;
+        var i:Int = track.getChildIndex(car);
+        car.x = ((track.startX) * track.tileWidth) + (track.tileWidth / 2);
+        car.y = ((track.startY) * track.tileHeight) + (track.tileHeight / 2) - 75 + ((i % 4) * 50);
         car.velocity.x = 0;
         car.velocity.y = 0;
         car.rotation = 0;
@@ -114,6 +111,7 @@ class NeatDriver extends Organism {
         ticksSinceCheckpoint = 0;
         
         alive = true;
+        track.addChild(car);
     }
 
     public override function calculateFitness():Float {

@@ -21,23 +21,34 @@ class Track extends Sprite {
 	// Tiles
 	private var skin:Skin;
 	private var tiles:Array<Array<Int>>;
-	private var tileWidth:Int;
-	private var tileHeight:Int;
+	public var tileWidth:Int;
+	public var tileHeight:Int;
 	private var tilesX:Int;
 	private var tilesY:Int;
 
 	public function new(tiles:Array<Array<Int>>, skin:Skin) {
 		super();
-		this.tiles      = tiles;
 		this.skin       = skin;
 		this.tileWidth  = skin.tileWidth;
 		this.tileHeight = skin.tileHeight;
+
+		setTiles(tiles);
+	}
+
+	public function setTiles(tiles:Array<Array<Int>>) {
+		// Remove any existing children
+		while(layerSkin.numChildren > 0) layerSkin.removeChildAt(0);
+		while(radar.numChildren > 0) radar.removeChildAt(0);
+
+		// Save the new tiles
+		this.tiles = tiles;
 
 		// Figure out the track width and height
 		tilesY = this.tiles.length;
 		tilesX = this.tiles[0].length;
 
 		// Put a black background on the radar
+		radar.graphics.clear();
 		radar.graphics.beginFill(0x000000);
 		radar.graphics.drawRect(0, 0, tilesX * 10, tilesY * 10);
 		radar.graphics.endFill();
@@ -55,13 +66,15 @@ class Track extends Sprite {
 				}
 
 				// Skinned tile
-				var b:Bitmap = new Bitmap(skin.tile[tiles[ty][tx] - 1]);
+				var tileID:Int = tiles[ty][tx];
+				if(tileID < 1) tileID = 1;
+				var b:Bitmap = new Bitmap(skin.tile[tileID - 1]);
 				b.x = tx * tileWidth;
 				b.y = ty * tileHeight;
 				layerSkin.addChild(b);
 
 				// Radar
-				var t:SvgTile = new SvgTile(tiles[ty][tx], 0xffffff, 1 / 30);
+				var t:SvgTile = new SvgTile(tileID, 0xffffff, 1 / 30);
 				t.x = tx * 10;
 				t.y = ty * 10;
 				radar.addChild(t);
@@ -281,6 +294,11 @@ class Track extends Sprite {
 
 	public function getTileXY(x:Float, y:Float):Array<Int> {
 		return [Std.int(x / tileWidth), Std.int(y / tileHeight)];
+	}
+
+	public function getTileIdAt(x:Float, y:Float):Int {
+		var t:Array<Int> = getTileXY(x, y);
+		return tiles[t[1]][t[0]];
 	}
 
 	public function findPath():Array<Array<Int>> {

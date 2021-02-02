@@ -22,7 +22,10 @@ class Population {
     public var alive:Int = 0;
     public var lastDeath:Int = 0;
 
-    public function new() {
+    private var resetCallback:Void->Bool;
+
+    public function new(resetCallback:Void->Bool) {
+        this.resetCallback = resetCallback;
     }
 
     public function addOrganism(o:Organism):Void {
@@ -41,7 +44,7 @@ class Population {
             lastDeath = 0;
         }
 
-        if(alive < 5 || lastDeath > 1800 || ticks > 6000) {
+        if(alive < 10 || lastDeath > 600 || ticks > 6000) {
             breed();
             ticks = 0;
             lastDeath = 0;
@@ -68,14 +71,16 @@ class Population {
         });
 
         // if we don't have any species left, just mutate everything
-        if(species.length > 0) {
+        if(species.length > 0 && species[0].organisms.length > 0) {
             reincarnate();
         } else {
             for (o in organisms) {
                 o.genome.mutate();
             }
         }
-        
+
+        // Reset world and all organisms
+        resetCallback();
         for(o in organisms) {
             o.reset();
         }

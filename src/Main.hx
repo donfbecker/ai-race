@@ -42,7 +42,7 @@ class Main extends Sprite {
 	#if neat
 	private var numberOfCars:Int = 200;
 	private var driver:Array<NeatDriver> = new Array<NeatDriver>();
-	private var population:Population = new Population();
+	private var population:Population;
 	#elseif qlearning
 	private var numberOfCars:Int = 1;
 	private var driver:Array<QLDriver> = new Array<QLDriver>();
@@ -51,8 +51,13 @@ class Main extends Sprite {
 	private var driver:Array<Driver> = new Array<Driver>();
 	#end
 
+	private var resets:Int = 0;
+
 	public function new() {
 		super();
+		#if neat
+			population = new Population(resetPopulation);
+		#end
 		addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 	}
 
@@ -140,11 +145,44 @@ class Main extends Sprite {
 				[1, 21, 11,  7,  7, 12, 22,  1,  1, 21, 11,  7,  7, 12, 22,  1],
 				[1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1],
 			],
+			[
+				[   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1],
+				[   1,   0,   0,   0,   3,   5,   7,   7,   6,   4,   0,   1],
+				[   1,   3,   5,   7,  12,  22,   0,   0,  21,  18,   0,   1],
+				[   1,  17,  22,   0,   0,   0,   0,   0,   0,  23,   4,   1],
+				[   1,  23,   4,   0,   0,   0,   0,   0,   0,  21,  18,   1],
+				[   1,  21,  11,   6,   4,   3,   5,   6,   4,   3,  24,   1],
+				[   1,   0,   0,  21,  11,  12,  22,  21,  11,  12,  22,   1],
+				[   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1]
+			],
+			[
+				[   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1],
+				[   1,   3,   5,   6,   4,   0,   0,   0,   0,   0,   1],
+				[   1,  17,  22,  21,  10,   4,   3,   5,   6,   4,   1],
+				[   1,   8,   0,   0,  21,  11,  12,  22,  21,  18,   1],
+				[   1,   8,   0,   0,   0,   0,   0,   0,   0,   8,   1],
+				[   1,  23,   4,   3,   5,   6,   4,   0,   3,  24,   1],
+				[   1,  21,  11,  12,  22,  21,  11,   7,  12,  22,   1],
+				[   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1]
+			],
+			[
+				[   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1],
+				[   1,   0,   3,   5,   7,   6,   4,   0,   0,   0,   1],
+				[   1,   3,   9,  22,   0,  21,  11,   6,   4,   0,   1],
+				[   1,  17,  22,   0,   3,   5,  14,  21,  10,   4,   1],
+				[   1,  23,   4,   3,   9,  22,   8,   0,  21,  18,   1],
+				[   1,  21,  11,  12,  22,   0,  23,   4,   3,  24,   1],
+				[   1,   0,   0,   0,   0,   0,  21,  11,  12,  22,   1],
+				[   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1]
+			]
 		];
 
 		// Create a Sprite for the track
 		var skin:Skin = new Skin('assets/worn_track.jpg', 300, 300);
-		track = new Track(trackTiles[3], skin);
+
+		// Create a random track
+		var generator:RandomTrack = new RandomTrack(10, 6, 25);
+		track = new Track(generator.getTiles(), skin);
 		track.x = -((track.startX - 1) * tileWidth) - ((stage.stageWidth - tileWidth) / 2);
 		track.y = -(track.startY * tileHeight) + ((stage.stageHeight - tileHeight) / 2);
 		addChild(track);
@@ -173,13 +211,16 @@ class Main extends Sprite {
 		for (i in 0...numberOfCars) {
 			car[i] = new Car(track, car);
 			car[i].x = ((track.startX) * tileWidth) + (tileWidth / 2);
-			car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
+			
 			#if neat
+				car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
 				driver[i] = new NeatDriver(track, car[i]);
 				population.addOrganism(driver[i]);
 			#elseif qlearning
+				car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2);
 				driver[i] = new QLDriver(track, car[i]);
 			#else
+				car[i].y = ((track.startY) * tileHeight) + (tileHeight / 2) - 75 + ((i % 4) * 50);
 				if (i > 0) driver[i] = new Driver(track, car[i]);
 			#end
 
@@ -203,6 +244,16 @@ class Main extends Sprite {
 		timer.addEventListener(TimerEvent.TIMER, handleEnterFrame);
 		timer.start();
 	}
+
+#if neat
+	private function resetPopulation():Bool {
+		if(++this.resets % 10 == 0) {
+			var generator:RandomTrack = new RandomTrack(10, 6, 25);
+			track.setTiles(generator.getTiles());
+		}
+		return true;
+	}
+#end
 
 	// Setup keyboard listener
 	private function handleEnterFrame(e:Event):Void {

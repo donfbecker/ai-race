@@ -37,7 +37,7 @@ class Car extends Sprite {
 	private var pickupAr:Array<Float> = [.6, .5, .4, .3, .2, .1, 0];
 	private var idle:Float = 0.00;
 	private var wheelRot:Float = 1 * (Math.PI / 180);
-	private var collisionPoint:Array<Int> = [0, -12, 12];
+	private var collisionPoint:Array<Float> = [0, -15, 15];
 
 	
 
@@ -58,6 +58,8 @@ class Car extends Sprite {
 		spriteBitmap.x = -halfX;
 		spriteBitmap.y = -halfY;
 		addChild(spriteBitmap);
+
+		collisionPoint = [0, -halfY, halfY];
 	}
 
 	public function tick(up:Bool = false, down:Bool = false, left:Bool = false, right:Bool = false, space:Bool = false):Void {
