@@ -23,3 +23,5 @@ lime test html -D qlearning
 lime test linux -D qlearning
 lime test [TARGET] -D qlearning
 ```
+
+The NEAT version can be viewed at https://games.betatestingsite.com/neat-race/
